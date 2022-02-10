@@ -2,6 +2,7 @@
 {% block content %}
 {% include 'navbar.html' %}
 <div class="container">
+    <h1>Search results for: {% query %}</h1>
     <div class="row">
         {% for product in products %}
       <div class="col-md-3 mt-4">
