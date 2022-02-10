@@ -53,7 +53,9 @@ def customer_register():
 def customerLogin():
     form = CustomerLoginFrom()
     if form.validate_on_submit():
-        user = Register.query.filter_by(email=form.email.data).first()
+        user = Register.query.filter_by(
+            "email={}".format(form.email.data) # SQL Injection Vuln
+            ).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
             flash('You are login now!', 'success')
