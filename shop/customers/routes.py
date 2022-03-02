@@ -9,6 +9,9 @@ import json
 import pdfkit
 import stripe
 
+from datetime import datetime
+from sqlalchemy.sql import text
+
 buplishable_key ='pk_test_MaILxTYQ15v5Uhd6NKI9wPdD00qdL0QZSl'
 stripe.api_key ='sk_test_9JlhVB6qwjcRdYzizjdwgIo0Dt00N55uxbWy'
 
@@ -41,24 +44,84 @@ def customer_register():
     form = CustomerRegisterForm()
     if form.validate_on_submit():
         hash_password = bcrypt.generate_password_hash(form.password.data)
-        register = Register(name=form.name.data, username=form.username.data, email=form.email.data,password=hash_password,country=form.country.data, city=form.city.data,contact=form.contact.data, address=form.address.data, zipcode=form.zipcode.data)
-        db.session.add(register)
+
+        insert_query = u"""
+        INSERT INTO register (
+            name, 
+            username, 
+            email, 
+            password, 
+            country, 
+            city, 
+            contact, 
+            address, 
+            zipcode,
+            date_created
+        ) VALUES (
+            "{name}", 
+            "{username}", 
+            "{email}", 
+            "{password}",
+            "{country}", 
+            "{city}", 
+            "{contact}", 
+            "{address}", 
+            "{zipcode}", 
+            datetime("now")
+        );
+        """.format(
+            name=form.name.data, 
+            username=form.username.data, 
+            email=form.email.data,
+            password=hash_password.decode(),
+            country=form.country.data,
+            city=form.city.data,
+            contact=form.contact.data,
+            address=form.address.data, 
+            zipcode=form.zipcode.data,
+            # date_created=datetime.utcnow
+        )
+        conn = db.engine.raw_connection()
+        conn.executescript(insert_query)
+        conn.close()
+        # register = Register(name=form.name.data, username=form.username.data, email=form.email.data,password=hash_password,country=form.country.data, city=form.city.data,contact=form.contact.data, address=form.address.data, zipcode=form.zipcode.data)
+        # db.session.add(register)
         flash(f'Welcome {form.name.data} Thank you for registering', 'success')
-        db.session.commit()
+        # db.session.commit()
         return redirect(url_for('login'))
     return render_template('customer/register.html', form=form)
 
 
 @app.route('/customer/login', methods=['GET','POST'])
 def customerLogin():
+    """Customer Login with Medium Difficulty SQL Exploit
+
+    This route has been rewritten to first hash the password
+    and then look up the user table for a user matching the
+    username and password. 
+    This allows for an SQL injection vulnerability where the
+    user enters e.g.
+
+        email@domain.com";--
+
+    bypassing the password check and logging into any user.
+    """
     form = CustomerLoginFrom()
     if form.validate_on_submit():
-        user = Register.query.filter_by(
-            "email={}".format(form.email.data) # SQL Injection Vuln
+        email = form.email.data
+        pw_hash = bcrypt.generate_password_hash(form.password.data)
+        user = Register.query.from_statement(
+            text("SELECT * FROM register WHERE email=\"{}\" AND password=\"{}\";".format(
+                email,
+                pw_hash
+            ))
             ).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
+        if user:
             login_user(user)
-            flash('You are login now!', 'success')
+            flash(
+                'You are logged in as {}!'.format(user.name), 
+                'success'
+            )
             next = request.args.get('next')
             return redirect(next or url_for('home'))
         flash('Incorrect email and password','danger')

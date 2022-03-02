@@ -1,0 +1,4 @@
+.venv
+nix-shell
+*.pyc
+test.sql
