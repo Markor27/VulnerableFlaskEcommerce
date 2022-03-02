@@ -1,4 +1,4 @@
 .venv
-nix-shell
+shell.nix
 *.pyc
 test.sql
