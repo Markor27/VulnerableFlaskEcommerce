@@ -65,17 +65,17 @@ def customer_register():
             profile,
             date_created
         ) VALUES (
-            "{name}", 
-            "{username}", 
-            "{email}", 
-            "{password}",
-            "{country}", 
-            "{city}", 
-            "{contact}", 
-            "{address}", 
-            "{zipcode}", 
-            "profile.jpg",
-            datetime("now")
+            '{name}', 
+            '{username}', 
+            '{email}', 
+            '{password}',
+            '{country}', 
+            '{city}', 
+            '{contact}', 
+            '{address}', 
+            '{zipcode}', 
+            'profile.jpg',
+            datetime('now')
         );
         """.format(
             name=form.name.data, 
@@ -109,7 +109,7 @@ def customerLogin():
     This allows for an SQL injection vulnerability where the
     user enters e.g.
 
-        email@domain.com";--
+        email@domain.com';--
 
     bypassing the password check and logging into any user.
 
@@ -121,12 +121,14 @@ def customerLogin():
     if form.validate_on_submit():
         email = form.email.data
         pw_hash = bcrypt.generate_password_hash(form.password.data)
-        user = Register.query.from_statement(
-            text("SELECT * FROM register WHERE email=\"{}\" AND password=\"{}\";".format(
+        query = text(
+            "SELECT * FROM register WHERE email='{}' AND password='{}';".format(
                 email,
-                pw_hash
-            ))
-            ).first()
+                pw_hash.decode()
+            )
+        )
+        print(query)
+        user = Register.query.from_statement(query).first()
         if user:
             login_user(user)
             flash(
