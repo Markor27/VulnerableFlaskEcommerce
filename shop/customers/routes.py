@@ -41,6 +41,12 @@ def thanks():
 
 @app.route('/customer/register', methods=['GET','POST'])
 def customer_register():
+    """Easy Mode SQL Injection
+    
+    This will just execute as many queries as you throw at it providing
+    they have the correct syntax.
+    """
+
     form = CustomerRegisterForm()
     if form.validate_on_submit():
         hash_password = bcrypt.generate_password_hash(form.password.data)
@@ -56,6 +62,7 @@ def customer_register():
             contact, 
             address, 
             zipcode,
+            profile,
             date_created
         ) VALUES (
             "{name}", 
@@ -67,6 +74,7 @@ def customer_register():
             "{contact}", 
             "{address}", 
             "{zipcode}", 
+            "profile.jpg",
             datetime("now")
         );
         """.format(
@@ -78,8 +86,7 @@ def customer_register():
             city=form.city.data,
             contact=form.contact.data,
             address=form.address.data, 
-            zipcode=form.zipcode.data,
-            # date_created=datetime.utcnow
+            zipcode=form.zipcode.data
         )
         conn = db.engine.raw_connection()
         conn.executescript(insert_query)
@@ -105,6 +112,10 @@ def customerLogin():
         email@domain.com";--
 
     bypassing the password check and logging into any user.
+
+    However, this format only allows for the execution of a single
+    SQL query so it cannot be used to execute arbitrary queries,
+    only those which can be incorporated into a valid SELECT command.
     """
     form = CustomerLoginFrom()
     if form.validate_on_submit():
