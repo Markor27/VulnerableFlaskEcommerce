@@ -11,7 +11,7 @@
         </div>
         <div class="col-md-2"></div>
     </div>
-    <form action="" method="post">
+    <form method="post" enctype="multipart/form-data">
         {{ form.csrf_token }}
         <div class="row">
             <div class="col-md-2"></div>
@@ -21,7 +21,7 @@
                 {{ render_field(form.email,class="form-control")}}
                 {{ render_field(form.password, class="form-control")}}
                 {{ render_field(form.confirm ,class="form-control")}}
-                {{ form.profile() }}
+                {{ render_field(form.profile) }}
             </div>
             <div class="col-md-4">
                 {{ render_field(form.country,class="form-control")}}
