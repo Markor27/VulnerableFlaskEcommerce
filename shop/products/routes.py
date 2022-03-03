@@ -26,7 +26,7 @@ def home():
 def result():
     searchword = request.args.get('q')
     products = Addproduct.query.msearch(searchword, fields=['name','desc'] , limit=6)
-    return render_template('products/result.html',products=products,brands=brands(),categories=categories())
+    return render_template('products/result.html',products=products,brands=brands(),categories=categories(),query=searchword)
 
 @app.route('/product/<int:id>')
 def single_page(id):

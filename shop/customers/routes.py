@@ -9,11 +9,13 @@ import json
 import pdfkit
 import stripe
 import hashlib
-#import time
+
+from datetime import datetime
+from sqlalchemy.sql import text
 
 buplishable_key ="pk_test_51KK8w1FYw28uBQKVHuWZXIbfhFCvPmiNnGz0lRevRwQ2utxHPQoZfkPnCwPd5zT1Y6nUiHlU0g0nrbPsC5xahkm1006X8LG44a"
-
 stripe.api_key = "sk_test_51KK8w1FYw28uBQKVw1kV3TCDh0K2RVF7cdJSWLkO5Dr2l7VxOSS0TtJxA3cfAliX7YnlLNVNqn627Ev9nxjmQDHO00axs1Jy7b"
+
 
 @app.route('/payment',methods=['POST'])
 def payment():
@@ -48,29 +50,105 @@ def images(filename):
 
 @app.route('/customer/register', methods=['GET','POST'])
 def customer_register():
+    """Easy Mode SQL Injection
+    
+    This will just execute as many queries as you throw at it providing
+    they have the correct syntax.
+    """
+
     form = CustomerRegisterForm()
     
     if form.validate_on_submit():
         profile_photo = photos.save(request.files.get('profile'))
-        #hash_password = bcrypt.generate_password_hash(form.password.data)
+        
         hash_password = (hashlib.md5(form.password.data.encode())).hexdigest()
-        register = Register(name=form.name.data, username=form.username.data, email=form.email.data,password=hash_password,country=form.country.data, city=form.city.data,contact=form.contact.data, address=form.address.data, zipcode=form.zipcode.data, profile=profile_photo)
-        db.session.add(register)
+        # hash_password = bcrypt.generate_password_hash(form.password.data)
+
+        insert_query = u"""
+        INSERT INTO register (
+            name, 
+            username, 
+            email, 
+            password, 
+            country, 
+            city, 
+            contact, 
+            address, 
+            zipcode,
+            profile,
+            date_created
+        ) VALUES (
+            '{name}', 
+            '{username}', 
+            '{email}', 
+            '{password}',
+            '{country}', 
+            '{city}', 
+            '{contact}', 
+            '{address}', 
+            '{zipcode}', 
+            '{profile}',
+            datetime('now')
+        );
+        """.format(
+            name=form.name.data, 
+            username=form.username.data, 
+            email=form.email.data,
+            password=hash_password.decode(),
+            country=form.country.data,
+            city=form.city.data,
+            contact=form.contact.data,
+            address=form.address.data, 
+            zipcode=form.zipcode.data,
+            profile=profile_photo
+        )
+        conn = db.engine.raw_connection()
+        conn.executescript(insert_query)
+        conn.close()
+        # register = Register(name=form.name.data, username=form.username.data, email=form.email.data,password=hash_password,country=form.country.data, city=form.city.data,contact=form.contact.data, address=form.address.data, zipcode=form.zipcode.data)
+        # db.session.add(register)
         flash(f'Welcome {form.name.data} Thank you for registering', 'success')
-        db.session.commit()
-        return redirect(url_for('customerLogin'))
+        # db.session.commit()
+        return redirect(url_for('login'))
     return render_template('customer/register.html', form=form)
 
 
 @app.route('/customer/login', methods=['GET','POST'])
 def customerLogin():
+    """Customer Login with Medium Difficulty SQL Exploit
+
+    This route has been rewritten to first hash the password
+    and then look up the user table for a user matching the
+    username and password. 
+    This allows for an SQL injection vulnerability where the
+    user enters e.g.
+
+        email@domain.com';--
+
+    bypassing the password check and logging into any user.
+
+    However, this format only allows for the execution of a single
+    SQL query so it cannot be used to execute arbitrary queries,
+    only those which can be incorporated into a valid SELECT command.
+    """
     form = CustomerLoginFrom()
     if form.validate_on_submit():
-        user = Register.query.filter_by(email=form.email.data).first()
-        #if user and bcrypt.check_password_hash(user.password, form.password.data):
-        if user and (user.password == (hashlib.md5(form.password.data.encode())).hexdigest()):
+        email = form.email.data
+        pw_hash = hashlib.md5(form.password.data.encode()).hexdigest() # bcrypt.generate_password_hash(form.password.data)
+        query = text(
+            "SELECT * FROM register WHERE email='{}' AND password='{}';".format(
+                email,
+                pw_hash.decode()
+            )
+        )
+        print(query)
+        user = Register.query.from_statement(query).first()
+        if user:
             login_user(user)
-            flash('You are login now!', 'success')
+            flash(
+                'You are logged in as {}!'.format(user.name), 
+                'success'
+            )
             next = request.args.get('next')
             return redirect(next or url_for('home'))
         flash('Incorrect email and password','danger')

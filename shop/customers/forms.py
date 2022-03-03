@@ -33,7 +33,11 @@ class CustomerRegisterForm(FlaskForm):
 
 
 class CustomerLoginFrom(FlaskForm):
-    email = StringField('Email: ', [validators.Email(), validators.DataRequired()])
+    email = StringField('Email: ', [
+        # validators.Email(), 
+        validators.DataRequired(),
+        # validators.Length(min=3,max=-1)
+        ])
     password = PasswordField('Password: ', [validators.DataRequired()])
 
    
