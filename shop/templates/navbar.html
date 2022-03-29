@@ -1,7 +1,7 @@
  
 <div class="container">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/">Myshop</a>
+        <a class="navbar-brand" href="/">BATTLE-FIELD BARGAINS</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -38,6 +38,9 @@
              <li class="nav-item">
                <a href="{{url_for('customer_logout')}}" class="nav-link"> Logout</a>
              </li>
+	<li class="nav-item">
+		<a href="{{url_for('addproduct')}}" class="nav-link">Add product</a>
+	</li>
              {% else %}
              <li class="nav-item">
               <a href="{{url_for('customer_register')}}" class="nav-link">Sign in</a>

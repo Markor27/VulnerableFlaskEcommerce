@@ -73,11 +73,11 @@
                 </button>
               </div>
               <div class="modal-body">
-                <p class="text-danger">Are you Sure that you want to delete this Category ({{ product.name }})</p>
+                <p class="text-danger">Are you Sure that you want to delete this Product ({{ product.name }})</p>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <form action="{{url_for('deletecat',id=product.id)}}" method="post">
+                <form action="{{url_for('deleteproduct',id=product.id)}}" method="post">
                   <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
                 
@@ -88,6 +88,24 @@
 <!--==============MODEL ===================-->
 
           {% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         </tbody>
     </table>
 </div>

@@ -2,3 +2,4 @@ __pycache__
 *.pyc
 venv
 shell.nix
+test.sql

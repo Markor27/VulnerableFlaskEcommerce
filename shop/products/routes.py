@@ -96,7 +96,7 @@ def addcat():
         getcat = request.form.get('category')
         category = Category(name=getcat)
         db.session.add(category)
-        flash(f'The brand {getcat} was added to your database','success')
+        flash(f'The category {getcat} was added to your database','success')
         db.session.commit()
         return redirect(url_for('addcat'))
     return render_template('products/addbrand.html', title='Add category')
@@ -124,10 +124,10 @@ def deletecat(id):
     category = Category.query.get_or_404(id)
     if request.method=="POST":
         db.session.delete(category)
-        flash(f"The brand {category.name} was deleted from your database","success")
+        flash(f"The category {category.name} was deleted from your database","success")
         db.session.commit()
         return redirect(url_for('admin'))
-    flash(f"The brand {category.name} can't be  deleted from your database","warning")
+    flash(f"The category {category.name} can't be  deleted from your database","warning")
     return redirect(url_for('admin'))
 
 
@@ -145,14 +145,14 @@ def addproduct():
         desc = form.discription.data
         brand = request.form.get('brand')
         category = request.form.get('category')
-        image_1 = photos.save(request.files.get('image_1'), name=secrets.token_hex(10) + ".")
-        image_2 = photos.save(request.files.get('image_2'), name=secrets.token_hex(10) + ".")
-        image_3 = photos.save(request.files.get('image_3'), name=secrets.token_hex(10) + ".")
+        image_1 = photos.save(request.files.get('image_1'))
+        image_2 = photos.save(request.files.get('image_2'))
+        image_3 = photos.save(request.files.get('image_3'))
         addproduct = Addproduct(name=name,price=price,discount=discount,stock=stock,colors=colors,desc=desc,category_id=category,brand_id=brand,image_1=image_1,image_2=image_2,image_3=image_3)
         db.session.add(addproduct)
         flash(f'The product {name} was added in database','success')
         db.session.commit()
-        return redirect(url_for('admin'))
+        return redirect(url_for('home'))
     return render_template('products/addproduct.html', form=form, title='Add a Product', brands=brands,categories=categories)
 
 
@@ -208,7 +208,7 @@ def updateproduct(id):
     return render_template('products/addproduct.html', form=form, title='Update Product',getproduct=product, brands=brands,categories=categories)
 
 
-@app.route('/deleteproduct/<int:id>', methods=['POST'])
+@app.route('/deleteproduct/<int:id>', methods=['GET','POST'])
 def deleteproduct(id):
     product = Addproduct.query.get_or_404(id)
     if request.method =="POST":
@@ -221,6 +221,6 @@ def deleteproduct(id):
         db.session.delete(product)
         db.session.commit()
         flash(f'The product {product.name} was delete from your record','success')
-        return redirect(url_for('adim'))
+        return redirect(url_for('admin'))
     flash(f'Can not delete the product','success')
     return redirect(url_for('admin'))
