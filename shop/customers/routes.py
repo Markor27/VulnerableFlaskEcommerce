@@ -45,7 +45,7 @@ def thanks():
     return render_template('customer/thank.html')
 @app.route('/static/images/<filename>')
 def images(filename):
-    return send_file('/var/www/html/flaskecommerce/shop/static/images/'+filename)
+    return send_file('static/images/'+filename)
 
 
 @app.route('/customer/register', methods=['GET','POST'])
