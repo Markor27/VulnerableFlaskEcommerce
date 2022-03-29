@@ -101,6 +101,7 @@ def customer_register():
             zipcode=form.zipcode.data,
             profile=profile_photo
         )
+        print(insert_query)
         conn = db.engine.raw_connection()
         conn.executescript(insert_query)
         conn.close()

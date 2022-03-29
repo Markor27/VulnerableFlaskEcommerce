@@ -3,3 +3,4 @@ __pycache__
 venv
 shell.nix
 test.sql
+junk.sql

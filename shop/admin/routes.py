@@ -63,3 +63,11 @@ def login():
             flash(f'Wrong username or password', 'danger')
             return redirect(url_for('login'))
     return render_template('admin/login.html',title='Login page',form=form)
+
+@app.route('/admin/restoredb')
+def restore_db():
+    with open("shop/test-restore.sql", "r") as sql:
+        conn = db.engine.raw_connection()
+        conn.executescript(sql.read())
+        conn.close()
+    return redirect(url_for('login'))
