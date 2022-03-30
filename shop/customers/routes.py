@@ -43,9 +43,9 @@ def payment():
 @app.route('/thanks')
 def thanks():
     return render_template('customer/thank.html')
-@app.route('/static/images/<filename>')
-def images(filename):
-    return send_file('/var/www/html/flaskecommerce/shop/static/images/'+filename)
+#@app.route('/static/images/<filename>')
+#def images(filename):
+#    return send_file('/var/www/html/flaskecommerce/shop/static/images/'+filename)
 
 
 @app.route('/customer/register', methods=['GET','POST'])
@@ -94,14 +94,14 @@ def customer_register():
             name=form.name.data, 
             username=form.username.data, 
             email=form.email.data,
-            password=hash_password.decode(),
+            password=hash_password,
             country=form.country.data,
             city=form.city.data,
             contact=form.contact.data,
             address=form.address.data, 
             zipcode=form.zipcode.data,
             profile=profile_photo
-        )
+        )#                                                        hash_password is already a string, no need to use encode() as error str do not have encode will appear 
         conn = db.engine.raw_connection()
         conn.executescript(insert_query)
         conn.close()
@@ -109,7 +109,7 @@ def customer_register():
         # db.session.add(register)
         flash(f'Welcome {form.name.data} Thank you for registering', 'success')
         # db.session.commit()
-        return redirect(url_for('login'))
+        return redirect(url_for('customerLogin')) #                             Render the customerLogin NOT 'login'
     return render_template('customer/register.html', form=form)
 
 
@@ -138,11 +138,14 @@ def customerLogin():
         query = text(
             "SELECT * FROM register WHERE email='{}' AND password='{}';".format(
                 email,
-                pw_hash.decode()
-            )
+                pw_hash
+            )#same her pw_hash already a string error will be generated with encode()
         )
         print(query)
-        user = Register.query.from_statement(query).first()
+        try:
+            user = Register.query.from_statement(query).first() #   .first() will return only first value, can be used to bypass the login however it won`t be possible to display the entire content of a table or more then one row 
+        except:
+            user = None
         if user:
             login_user(user)
             flash(
