@@ -43,9 +43,9 @@ def payment():
 @app.route('/thanks')
 def thanks():
     return render_template('customer/thank.html')
-@app.route('/static/images/<filename>')
-def images(filename):
-    return send_file('static/images/'+filename)
+#@app.route('/static/images/<filename>')
+#def images(filename):
+#    return send_file('/var/www/html/flaskecommerce/shop/static/images/'+filename)
 
 
 @app.route('/customer/register', methods=['GET','POST'])
@@ -101,7 +101,7 @@ def customer_register():
             zipcode=form.zipcode.data,
             profile=profile_photo
         )
-        print(insert_query)
+
         conn = db.engine.raw_connection()
         conn.executescript(insert_query)
         conn.close()
@@ -152,8 +152,11 @@ def customerLogin():
                 pw_hash
             )
         )
-        print(query)
-        user = Register.query.from_statement(query).first()
+
+        try:
+            user = Register.query.from_statement(query).first() #   .first() will return only first value, can be used to bypass the login however it won`t be possible to display the entire content of a table or more then one row 
+        except:
+            user = None
         if user:
             login_user(user)
             flash(

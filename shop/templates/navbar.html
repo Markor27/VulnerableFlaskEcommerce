@@ -48,9 +48,20 @@
              <li class="nav-item">
               <a href="{{url_for('customerLogin')}}" class="nav-link">login</a>
             </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Administrator
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="{{url_for('login')}}">Login</a> 
+              </div>
+            </li>
             {% endif %}
               <li class="nav-item">
                 <a href="{{url_for('getCart')}}" class="nav-link"> Cart ({{ session['Shoppingcart']|length }}) </a>
+              </li>
+              <li class="nav-item">
+                <a href="/contactus" class="nav-link"> Contact us</a>
               </li>
           </ul>
           <form class="form-inline my-2 my-lg-0" action="{{url_for('result')}}">

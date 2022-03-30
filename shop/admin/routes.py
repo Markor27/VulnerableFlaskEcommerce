@@ -8,22 +8,34 @@ from sqlalchemy import text
 
 @app.route('/admin')
 def admin():
+    if 'username' not in session:
+        flash('Admin Must Login First!','danger')
+        return redirect(url_for('login'))
     products = Addproduct.query.all()
     return render_template('admin/index.html', title='Admin page',products=products)
 
 @app.route('/brands')
 def brands():
+    if 'username' not in session:
+        flash('Admin Must Login First!','danger')
+        return redirect(url_for('login'))
     brands = Brand.query.order_by(Brand.id.desc()).all()
     return render_template('admin/brand.html', title='brands',brands=brands)
 
 
 @app.route('/categories')
 def categories():
+    if 'username' not in session:
+        flash('Admin Must Login First!','danger')
+        return redirect(url_for('login'))
     categories = Category.query.order_by(Category.id.desc()).all()
     return render_template('admin/brand.html', title='categories',categories=categories)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if 'username' not in session:
+        flash('Admin Must Login First!','danger')
+        return redirect(url_for('login'))
     form = RegistrationForm()
     if form.validate_on_submit():
         hash_password = (hashlib.md5(form.password.data.encode())).hexdigest()
@@ -52,7 +64,7 @@ def login():
         ##if user and bcrypt.check_password_hash(user.password, form.password.data):
         #if user and (user.password == (hashlib.md5(form.password.data.encode())).hexdigest()):
         if user:
-            session['username'] = form.username.data
+            session['username'] = user[0].username #form.username.data
             if len(user) == 1:
                 flash(f'welcome {user[0].username} you are logedin now','success')
             else:
