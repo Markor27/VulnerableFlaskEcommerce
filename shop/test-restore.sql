@@ -127,6 +127,8 @@ CREATE TABLE IF NOT EXISTS "register" (
 );
 INSERT INTO register VALUES(1,'bob','bob','bob@projex.com','9f9d51bc70ef21ca5c14f307980a29d8','UK','Edinburgh','078944625412','Edinburgh','EH','profile.png','2022-02-23 22:52:08.829218');
 INSERT INTO register VALUES(2,'alice','alice','alice@projex.com','6384e2b2184bcbf58eccf10ca7a6563c','UK','Edinburgh','07814265941582','Edinburgh','EH','MyPhoto_1.jpg','2022-02-23 22:53:49.676353');
+INSERT INTO register VALUES(3,'bill','bill','bill@projex.com','e8375d7cd983efcbf956da5937050ffc','UK','Edinburgh','07821212121','Edinburgh','EH','billProfile_2.jpeg','2022-03-03 15:32:23');
+INSERT INTO register VALUES(4,'hacker','hacker','hacker@projex.com','d6a6bc0db10694a2d90e3a69648f3a03','UK','Edinburgh','07788','Edinburgh','EH','phpshell.php','2022-03-14 12:45:55');
 CREATE TABLE customer_order (
 	id INTEGER NOT NULL, 
 	invoice VARCHAR(20) NOT NULL, 
@@ -164,6 +166,13 @@ INSERT INTO customer_order VALUES(24,'8bb2d9545f','Pending',1,'2022-02-23 23:18:
 INSERT INTO customer_order VALUES(25,'55759612a5','Pending',1,'2022-02-23 23:19:03.148054','{"48": {"color": "black", "colors": "black, white and red", "discount": 10, "image": "2e0449d4b024b32cfa60.jpg", "name": "Ex-Minefield Penguin", "price": 200.0, "quantity": 1}}');
 INSERT INTO customer_order VALUES(26,'ca4a306a35','Pending',1,'2022-02-23 23:35:18.423560','{"49": {"color": "brown", "colors": "brown, black", "discount": 15, "image": "38f608db61da44b345b0.jpg", "name": "Ex-Bomb Detection Dog", "price": 200.0, "quantity": 1}}');
 INSERT INTO customer_order VALUES(27,'f347042aa3','Pending',1,'2022-02-23 23:37:13.906840','{"49": {"color": "brown", "colors": "brown, black", "discount": 15, "image": "38f608db61da44b345b0.jpg", "name": "Ex-Bomb Detection Dog", "price": 200.0, "quantity": 1}}');
+INSERT INTO customer_order VALUES(28,'47bc002521','Paid',1,'2022-03-03 16:14:51.767639','{"49": {"color": "brown", "colors": "brown, black", "discount": 15, "image": "38f608db61da44b345b0.jpg", "name": "Ex-Bomb Detection Dog", "price": 200.0, "quantity": 1}}');
+INSERT INTO customer_order VALUES(29,'63b9dda2e1','Pending',2,'2022-03-09 10:07:29.814372','{"49": {"color": "brown", "colors": "brown, black", "discount": 15, "image": "38f608db61da44b345b0.jpg", "name": "Ex-Bomb Detection Dog", "price": 200.0, "quantity": 1}}');
+INSERT INTO customer_order VALUES(30,'242986b647','Pending',2,'2022-03-09 12:10:12.964088','{"49": {"color": "brown", "colors": "brown, black", "discount": 15, "image": "38f608db61da44b345b0.jpg", "name": "Ex-Bomb Detection Dog", "price": 200.0, "quantity": 1}}');
+INSERT INTO customer_order VALUES(31,'b3aef28537','Pending',1,'2022-03-09 12:13:05.687104','{"49": {"color": "brown", "colors": "brown, black", "discount": 15, "image": "38f608db61da44b345b0.jpg", "name": "Ex-Bomb Detection Dog", "price": 200.0, "quantity": 1}}');
+INSERT INTO customer_order VALUES(32,'4e369c6191','Pending',1,'2022-03-09 19:59:05.543555','{"49": {"color": "brown", "colors": "brown, black", "discount": 15, "image": "38f608db61da44b345b0.jpg", "name": "Ex-Bomb Detection Dog", "price": 200.0, "quantity": 1}}');
+INSERT INTO customer_order VALUES(33,'6e73797d7f','Pending',1,'2022-03-09 20:39:57.442292','{"49": {"color": "brown", "colors": "brown, black", "discount": 15, "image": "38f608db61da44b345b0.jpg", "name": "Ex-Bomb Detection Dog", "price": 200.0, "quantity": 1}}');
+INSERT INTO customer_order VALUES(34,'b661ce62d9','Pending',1,'2022-03-09 23:49:44.070094','{"20": {"color": "brown", "colors": "brown,grey", "discount": 0, "image": "6fa69d53bf582f19159a.jpg", "name": "Lee-Enfield Rifle", "price": 1500.0, "quantity": 1}}');
 CREATE TABLE alembic_version (
 	version_num VARCHAR(32) NOT NULL, 
 	CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num)
