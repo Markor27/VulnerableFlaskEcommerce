@@ -62,7 +62,6 @@ def customer_register():
         profile_photo = photos.save(request.files.get('profile'))
         
         hash_password = (hashlib.md5(form.password.data.encode())).hexdigest()
-        # hash_password = bcrypt.generate_password_hash(form.password.data)
 
         insert_query = u"""
         INSERT INTO register (
@@ -101,15 +100,13 @@ def customer_register():
             address=form.address.data, 
             zipcode=form.zipcode.data,
             profile=profile_photo
-        )#                                                        hash_password is already a string, no need to use encode() as error str do not have encode will appear 
+        )
+
         conn = db.engine.raw_connection()
         conn.executescript(insert_query)
         conn.close()
-        # register = Register(name=form.name.data, username=form.username.data, email=form.email.data,password=hash_password,country=form.country.data, city=form.city.data,contact=form.contact.data, address=form.address.data, zipcode=form.zipcode.data)
-        # db.session.add(register)
         flash(f'Welcome {form.name.data} Thank you for registering', 'success')
-        # db.session.commit()
-        return redirect(url_for('customerLogin')) #                             Render the customerLogin NOT 'login'
+        return redirect(url_for('customerLogin'))
     return render_template('customer/register.html', form=form)
 
 
@@ -130,6 +127,20 @@ def customerLogin():
     However, this format only allows for the execution of a single
     SQL query so it cannot be used to execute arbitrary queries,
     only those which can be incorporated into a valid SELECT command.
+
+    For an example of a query that can leak data this way:
+
+        admin@site.com' UNION SELECT id, password, email, username, name, 
+        country, city, contact, address, zipcode, profile, date_created 
+        FROM register WHERE email='admin@site.com' ORDER BY name DESC;--
+
+    Note how in the UNION SELECT, the place of `password` and `name` are
+    swapped. This means that the table returned by the query will have
+    the password hash in the name column and vice versa. In combination with
+    the `.first()` returning the first row from the column and the 
+    `ORDER BY name DESC`, password hash should appear first and be returned
+
+    This allows for slow but automatable exfiltration of any database field 
     """
     form = CustomerLoginFrom()
     if form.validate_on_submit():
@@ -139,9 +150,9 @@ def customerLogin():
             "SELECT * FROM register WHERE email='{}' AND password='{}';".format(
                 email,
                 pw_hash
-            )#same her pw_hash already a string error will be generated with encode()
+            )
         )
-        print(query)
+
         try:
             user = Register.query.from_statement(query).first() #   .first() will return only first value, can be used to bypass the login however it won`t be possible to display the entire content of a table or more then one row 
         except:
